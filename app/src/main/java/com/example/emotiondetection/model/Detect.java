@@ -2,19 +2,19 @@ package com.example.emotiondetection.model;
 
 public class Detect {
     private int id;
-    private int idEmotion;
+    private Emotion emotion;
     private float probability;
     private String timestamp;
 
-    public Detect(int id, int idEmotion, float probability, String timestamp) {
+    public Detect(int id, Emotion emotion, float probability, String timestamp) {
         this.id = id;
-        this.idEmotion = idEmotion;
+        this.emotion = emotion;
         this.probability = probability;
         this.timestamp = timestamp;
     }
 
-    public Detect(int idEmotion, float probability, String timestamp) {
-        this.idEmotion = idEmotion;
+    public Detect(Emotion emotion, float probability, String timestamp) {
+        this.emotion = emotion;
         this.probability = probability;
         this.timestamp = timestamp;
     }
@@ -23,8 +23,8 @@ public class Detect {
         return id;
     }
 
-    public int getIdEmotion() {
-        return idEmotion;
+    public Emotion getEmotion() {
+        return emotion;
     }
 
     public float getProbability() {

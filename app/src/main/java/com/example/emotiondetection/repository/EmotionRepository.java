@@ -24,7 +24,7 @@ public class EmotionRepository {
     public void initEmotionData(){
         for (String emotion: Emotion.emotions) {
             try{
-                this.getOneDataByName(emotion);
+                this.getOneMotionByName(emotion);
             }catch (Resources.NotFoundException e){
                 ContentValues data = new ContentValues();
                 data.put("nama", emotion);
@@ -35,13 +35,12 @@ public class EmotionRepository {
         }
     }
 
-    public ArrayList<Emotion> getAll(){
+    public ArrayList<Emotion> getAllEmotion(){
         ArrayList<Emotion> emotions = new ArrayList<>();
         Cursor cursor = database.getDb().rawQuery("select id, nama, total from emotion", null);
 
         if (cursor.getCount() > 0) {
             while (cursor.moveToNext()) {
-                System.out.println(cursor.toString());
                 int id = Integer.parseInt(cursor.getString(0));
                 String nama = cursor.getString(1);
                 int total = Integer.parseInt(cursor.getString(2));
@@ -51,8 +50,18 @@ public class EmotionRepository {
         return emotions;
     }
 
-    public Emotion getOneDataByName(String name){
+    public Emotion getOneMotionByName(String name){
         Cursor cursor = database.getDb().rawQuery("select id, nama, total from emotion WHERE nama = '" + name + "';", null);
+
+        if (cursor.getCount() == 0) {
+            throw new Resources.NotFoundException();
+        }
+        cursor.moveToFirst();
+        return new Emotion(Integer.parseInt(cursor.getString(0)), cursor.getString(1), Integer.parseInt(cursor.getString(2)));
+    }
+
+    public Emotion getEmotionById(int id){
+        Cursor cursor = database.getDb().rawQuery("select id, nama, total from emotion WHERE id = " + id + ";", null);
 
         if (cursor.getCount() == 0) {
             throw new Resources.NotFoundException();
@@ -63,13 +72,13 @@ public class EmotionRepository {
 
     public void insertDetect(Prediction prediction){
         ContentValues data = new ContentValues();
-        Emotion emotion = getOneDataByName(prediction.getLabel());
+        Emotion emotion = getOneMotionByName(prediction.getLabel());
 
         SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
         String timestamp  = dateFormat.format(new Date());
 
-        Detect detect = new Detect(emotion.getId(), prediction.getProbability(), timestamp);
-        data.put("id_emotion", detect.getIdEmotion());
+        Detect detect = new Detect(emotion, prediction.getProbability(), timestamp);
+        data.put("id_emotion", detect.getEmotion().getId());
         data.put("probability", detect.getProbability());
         data.put("timestamp", detect.getTimestamp());
 
@@ -85,9 +94,10 @@ public class EmotionRepository {
                 System.out.println(cursor.toString());
                 int id = Integer.parseInt(cursor.getString(0));
                 int idEmotion = Integer.parseInt(cursor.getString(1));
+                Emotion emotion = getEmotionById(idEmotion);
                 float probability = Float.parseFloat(cursor.getString(2));
                 String timestamp = cursor.getString(3);
-                detects.add(new Detect(id, idEmotion, probability, timestamp));
+                detects.add(new Detect(id, emotion, probability, timestamp));
             }
         }
         return detects;

@@ -6,10 +6,8 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 
-import com.example.emotiondetection.model.Detect;
 import com.example.emotiondetection.repository.EmotionRepository;
 
-import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity {
     private EmotionRepository emotionRepository;
@@ -31,14 +29,15 @@ public class MainActivity extends AppCompatActivity {
             this.check();
         }
 
-        ArrayList<Detect> detects = emotionRepository.getAllDetect();
-        for (Detect detect: detects){
-            System.out.println(detect.getId() + " " + detect.getIdEmotion() + " " + detect.getProbability() + " " + detect.getTimestamp());
-        }
     }
 
     public void openCamera(View v){
         Intent cameraIntent = new Intent(this, CameraActivity.class);
+        this.startActivity(cameraIntent);
+    }
+
+    public void openStatistic(View v){
+        Intent cameraIntent = new Intent(this, StatisticActivity.class);
         this.startActivity(cameraIntent);
     }
 }

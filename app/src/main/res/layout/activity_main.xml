@@ -20,7 +20,7 @@
         android:layout_width="match_parent"
         android:layout_height="80dp"
         android:drawableLeft="@drawable/statistic_selector"
-        android:onClick="openCamera"
+        android:onClick="openStatistic"
         android:text="Statistic" />
 
 
