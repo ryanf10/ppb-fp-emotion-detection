@@ -9,15 +9,66 @@
 
 
     <LinearLayout
-        android:layout_width="match_parent"
+        android:layout_width="0dp"
         android:layout_height="match_parent"
+        android:layout_weight="0.9"
         >
         <org.opencv.android.JavaCameraView
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:id="@+id/opencv_surface_view"
-            app:show_fps="true"
             app:camera_id="any"
             />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="0.1"
+        android:orientation="vertical"
+        android:background="@android:color/background_dark">
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:orientation="vertical"
+            android:gravity="center"
+            android:background="@android:color/background_dark">
+            <ImageButton
+                android:id="@+id/btnSwitchCamera"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/switch_camera_button_selector"
+                android:background="@android:color/transparent"
+                android:onClick="switchCamera"
+                />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:orientation="vertical"
+            android:gravity="center"
+            android:background="@android:color/background_dark">
+            <ImageButton
+                android:id="@+id/capture"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/capture_button_selector"
+                android:background="@android:color/transparent"
+                android:onClick="capture"
+                />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:orientation="vertical"
+            android:background="@android:color/background_dark">
+        </LinearLayout>
+
+
     </LinearLayout>
 </LinearLayout>

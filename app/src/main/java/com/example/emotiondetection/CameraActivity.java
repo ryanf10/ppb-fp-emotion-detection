@@ -7,6 +7,8 @@ import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.SurfaceView;
+import android.view.View;
+import android.widget.Toast;
 
 import com.example.emotiondetection.ml.Model;
 
@@ -42,8 +44,15 @@ public class CameraActivity extends org.opencv.android.CameraActivity {
     private static String LOGTAG = "OpenCV_Log";
     private CameraBridgeViewBase cameraBridgeViewBase;
     private CascadeClassifier cascadeClassifier;
-    private int cameraIndex = 0;
+
+    private static final int FRONT_CAMERA_INDEX = 1;
+    private static final int REAR_CAMERA_INDEX = 0;
+    private int cameraIndex = FRONT_CAMERA_INDEX;
+
     private ArrayList<String> results;
+
+    private boolean isShowCapture = false, isPrepareCapture = false;
+    private Mat capture;
 
     private BaseLoaderCallback baseLoaderCallback = new BaseLoaderCallback(this) {
         @Override
@@ -166,6 +175,38 @@ public class CameraActivity extends org.opencv.android.CameraActivity {
 
         @Override
         public Mat onCameraFrame(CameraBridgeViewBase.CvCameraViewFrame inputFrame) {
+            if(isShowCapture){
+                if(results.size() == 0){
+                    CameraActivity.this.runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            Toast.makeText(getApplicationContext(), "Coba ulangi lagi", Toast.LENGTH_SHORT).show();
+                        }
+                    });
+
+                    isShowCapture = false;
+                }else{
+                    CameraActivity.this.runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            String text = "Terima Kasih\n";
+                            for (String result: results){
+                                text += result + "\n";
+                            }
+                            Toast.makeText(getApplicationContext(), text, Toast.LENGTH_LONG).show();
+                        }
+                    });
+
+                    try {
+                        Thread.sleep(3000);
+                        isShowCapture = false;
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+
+                    return capture;
+                }
+            }
             Mat input_rgba = inputFrame.rgba();
             Mat input_gray = inputFrame.gray();
 
@@ -197,13 +238,19 @@ public class CameraActivity extends org.opencv.android.CameraActivity {
                     Prediction prediction = mapPrediction(confidences);
                     Imgproc.putText(input_rgba, String.format("%s (%.2f%%)", prediction.getLabel(), prediction.getProbability()), new Point(rect.x + 20, rect.y - 60), Imgproc.FONT_HERSHEY_SIMPLEX, 2,  new Scalar(0, 255, 0), 2, Imgproc.LINE_AA);
 
+                    results.add(prediction.getLabel());
+
                     // Releases model resources if no longer used.
                     model.close();
                 } catch (IOException e) {
-                    // TODO Handle the exception
+                    e.printStackTrace();
                 }
             }
-
+            if(isPrepareCapture) {
+                capture = input_rgba;
+                isPrepareCapture = false;
+                isShowCapture = true;
+            }
             return input_rgba;
         }
     };
@@ -233,6 +280,27 @@ public class CameraActivity extends org.opencv.android.CameraActivity {
         super.onDestroy();
         if (cameraBridgeViewBase != null){
             cameraBridgeViewBase.disableView();
+        }
+    }
+
+    public void switchCamera(View v){
+        if (this.cameraIndex == REAR_CAMERA_INDEX){
+            this.cameraIndex = FRONT_CAMERA_INDEX;
+        }else{
+            this.cameraIndex = REAR_CAMERA_INDEX;
+
+        }
+        cameraBridgeViewBase.disableView();
+        cameraBridgeViewBase.setCameraIndex(cameraIndex);
+        cameraBridgeViewBase.enableView();
+    }
+
+    public void capture(View v){
+        if(!isShowCapture) {
+            this.isPrepareCapture = true;
+        }else{
+            this.isShowCapture = false;
+            results = new ArrayList<>();
         }
     }
 
