@@ -1,4 +1,4 @@
-package com.example.emotiondetection;
+package com.example.emotiondetection.model;
 
 public class Prediction {
     private String label;

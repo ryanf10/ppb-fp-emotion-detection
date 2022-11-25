@@ -1,7 +1,5 @@
 package com.example.emotiondetection;
 
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.os.Bundle;
@@ -11,6 +9,9 @@ import android.view.View;
 import android.widget.Toast;
 
 import com.example.emotiondetection.ml.Model;
+import com.example.emotiondetection.model.Emotion;
+import com.example.emotiondetection.model.Prediction;
+import com.example.emotiondetection.repository.EmotionRepository;
 
 import org.opencv.android.BaseLoaderCallback;
 import org.opencv.android.CameraBridgeViewBase;
@@ -49,7 +50,8 @@ public class CameraActivity extends org.opencv.android.CameraActivity {
     private static final int REAR_CAMERA_INDEX = 0;
     private int cameraIndex = FRONT_CAMERA_INDEX;
 
-    private ArrayList<String> results;
+    private ArrayList<Prediction> results;
+    private EmotionRepository emotionRepository;
 
     private boolean isShowCapture = false, isPrepareCapture = false;
     private Mat capture;
@@ -105,6 +107,7 @@ public class CameraActivity extends org.opencv.android.CameraActivity {
         setContentView(R.layout.activity_camera);
 
         this.results = new ArrayList<>();
+        this.emotionRepository = new EmotionRepository(getApplicationContext());
 
         cameraBridgeViewBase = (CameraBridgeViewBase) findViewById(R.id.opencv_surface_view);
         cameraBridgeViewBase.setVisibility(SurfaceView.VISIBLE);
@@ -117,19 +120,17 @@ public class CameraActivity extends org.opencv.android.CameraActivity {
         return Collections.singletonList(cameraBridgeViewBase);
     }
 
-    private Prediction mapPrediction(float[] confidences){
-        String[] labels = {"Angry", "Disgusted", "Fearful", "Happy", "Neutral", "Sad", "Surprised"};
-
+    private Prediction mapPrediction(float[] probabilities){
         int maxPos = -1;
         float max = -1.0f;
-        for (int i = 0; i < confidences.length; i++){
-            if(confidences[i] > max){
+        for (int i = 0; i < probabilities.length; i++){
+            if(probabilities[i] > max){
                 maxPos = i;
-                max = confidences[i];
+                max = probabilities[i];
             }
         }
 
-        return new Prediction(labels[maxPos], max * 100);
+        return new Prediction(Emotion.emotions[maxPos], max * 100);
     }
 
     private ByteBuffer imagePreprocess(Mat input_gray, Rect rect){
@@ -190,12 +191,16 @@ public class CameraActivity extends org.opencv.android.CameraActivity {
                         @Override
                         public void run() {
                             String text = "Terima Kasih\n";
-                            for (String result: results){
-                                text += result + "\n";
+                            for (Prediction result: results){
+                                text += result.getLabel() + "\n";
+                                emotionRepository.insertDetect(result);
                             }
                             Toast.makeText(getApplicationContext(), text, Toast.LENGTH_LONG).show();
                         }
                     });
+
+
+
 
                     try {
                         Thread.sleep(3000);
@@ -234,11 +239,11 @@ public class CameraActivity extends org.opencv.android.CameraActivity {
                     Model.Outputs outputs = model.process(inputFeature0);
                     TensorBuffer outputFeature0 = outputs.getOutputFeature0AsTensorBuffer();
 
-                    float[] confidences = outputFeature0.getFloatArray();
-                    Prediction prediction = mapPrediction(confidences);
+                    float[] probabilities = outputFeature0.getFloatArray();
+                    Prediction prediction = mapPrediction(probabilities);
                     Imgproc.putText(input_rgba, String.format("%s (%.2f%%)", prediction.getLabel(), prediction.getProbability()), new Point(rect.x + 20, rect.y - 60), Imgproc.FONT_HERSHEY_SIMPLEX, 2,  new Scalar(0, 255, 0), 2, Imgproc.LINE_AA);
 
-                    results.add(prediction.getLabel());
+                    results.add(prediction);
 
                     // Releases model resources if no longer used.
                     model.close();
