@@ -4,14 +4,24 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".MainActivity">
+    android:orientation="vertical"
+    tools:context=".MainActivity"
+    android:padding="10dp">
+
 
     <Button
-        android:id="@+id/btnOpenCamera"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Open Camera"
-        android:onClick="openCamera"/>
+        android:layout_width="match_parent"
+        android:layout_height="80dp"
+        android:drawableLeft="@drawable/camera_selector"
+        android:onClick="openCamera"
+        android:text="Emotion Detection" />
+
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="80dp"
+        android:drawableLeft="@drawable/statistic_selector"
+        android:onClick="openCamera"
+        android:text="Statistic" />
 
 
 </LinearLayout>
