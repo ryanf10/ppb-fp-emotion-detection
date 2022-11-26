@@ -36,8 +36,13 @@ public class MainActivity extends AppCompatActivity {
         this.startActivity(cameraIntent);
     }
 
-    public void openStatistic(View v){
-        Intent cameraIntent = new Intent(this, StatisticActivity.class);
+    public void openAllTimeStatistic(View v){
+        Intent cameraIntent = new Intent(this, AllTimeStatisticActivity.class);
+        this.startActivity(cameraIntent);
+    }
+
+    public void openTodayStatistic(View v){
+        Intent cameraIntent = new Intent(this, TodayStatisticActivity.class);
         this.startActivity(cameraIntent);
     }
 }

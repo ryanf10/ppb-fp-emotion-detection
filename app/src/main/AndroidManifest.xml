@@ -26,9 +26,17 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.EmotionDetection"
+        tools:node="merge"
         tools:targetApi="31">
         <activity
-            android:name=".StatisticActivity"
+            android:name=".TodayStatisticActivity"
+            android:exported="false">
+            <meta-data
+                android:name="android.app.lib_name"
+                android:value="" />
+        </activity>
+        <activity
+            android:name=".AllTimeStatisticActivity"
             android:exported="false">
             <meta-data
                 android:name="android.app.lib_name"

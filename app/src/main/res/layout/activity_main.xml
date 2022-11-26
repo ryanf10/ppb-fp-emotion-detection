@@ -20,8 +20,15 @@
         android:layout_width="match_parent"
         android:layout_height="80dp"
         android:drawableLeft="@drawable/statistic_selector"
-        android:onClick="openStatistic"
-        android:text="Statistic" />
+        android:onClick="openAllTimeStatistic"
+        android:text="All Time Statistic" />
+
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="80dp"
+        android:drawableLeft="@drawable/statistic_selector"
+        android:onClick="openTodayStatistic"
+        android:text="Today Statistic" />
 
 
 </LinearLayout>

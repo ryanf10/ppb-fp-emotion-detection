@@ -2,32 +2,37 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:layout_marginVertical="10dp"
     android:orientation="vertical"
-    android:padding="10dp"
-    android:layout_marginVertical="10dp">
+    android:padding="10dp">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="0.7">
+        android:layout_weight="0.5"
+        android:orientation="vertical">
+        <com.anychart.AnyChartView
+            android:id="@+id/pieChart"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"/>
 
     </LinearLayout>
 
 
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:orientation="vertical"
         android:layout_weight="0.3"
-        >
+        android:orientation="vertical">
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:padding="10dp"
             android:text="History"
-            android:textStyle="bold"
             android:textSize="20dp"
-            android:padding="10dp"/>
+            android:textStyle="bold" />
 
         <ListView
             android:id="@+id/listHistory"
