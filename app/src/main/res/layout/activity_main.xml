@@ -26,7 +26,7 @@
     <Button
         android:layout_width="match_parent"
         android:layout_height="80dp"
-        android:drawableLeft="@drawable/statistic_selector"
+        android:drawableLeft="@drawable/calendar_selector"
         android:onClick="openTodayStatistic"
         android:text="Today Statistic" />
 
