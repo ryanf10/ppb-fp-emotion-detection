@@ -51,7 +51,7 @@ public class TodayStatisticActivity extends AppCompatActivity {
             total += emotion.getTotal();
             dataAllTime.add(new ValueDataEntry(emotion.getNama(), emotion.getTotal()));
         }
-        pieChart.setChart(generatePieChart(dataAllTime, "All Time Visitor Emotion"));
+        pieChart.setChart(generatePieChart(dataAllTime, "Today Visitor Emotion"));
     }
 
 
