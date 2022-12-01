@@ -29,7 +29,7 @@ public class Database {
 
         this.db = this.openHelper.getWritableDatabase();
         this.db.execSQL("CREATE TABLE IF NOT EXISTS emotion(id INTEGER PRIMARY KEY AUTOINCREMENT, nama TEXT UNIQUE, total INTEGER)");
-        this.db.execSQL("CREATE TABLE IF NOT EXISTS detect(id INTEGER PRIMARY KEY AUTOINCREMENT, id_emotion INTEGER, probability REAL, timestamp TEXT, FOREIGN KEY(id_emotion) REFERENCES emotion(id))");
+        this.db.execSQL("CREATE TABLE IF NOT EXISTS detect(id INTEGER PRIMARY KEY AUTOINCREMENT, id_emotion INTEGER, probability REAL, timestamp TEXT, filename TEXT, FOREIGN KEY(id_emotion) REFERENCES emotion(id))");
     }
 
     public static Database getInstance(Context context) {

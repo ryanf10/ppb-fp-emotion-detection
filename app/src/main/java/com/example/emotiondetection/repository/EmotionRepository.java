@@ -29,7 +29,6 @@ public class EmotionRepository {
                 ContentValues data = new ContentValues();
                 data.put("nama", emotion);
                 data.put("total", 0);
-                System.out.println("Insert emotion " + emotion);
                 this.database.getDb().insert("emotion", null, data);
             }
         }
@@ -91,17 +90,18 @@ public class EmotionRepository {
         database.getDb().update("emotion", data, "id = " + emotion.getId(), null);
     }
 
-    public void insertDetect(Prediction prediction) {
+    public void insertDetect(Prediction prediction, String filename) {
         ContentValues data = new ContentValues();
         Emotion emotion = getOneMotionByName(prediction.getLabel());
 
         SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
         String timestamp = dateFormat.format(new Date());
 
-        Detect detect = new Detect(emotion, prediction.getProbability(), timestamp);
+        Detect detect = new Detect(emotion, prediction.getProbability(), timestamp, filename);
         data.put("id_emotion", detect.getEmotion().getId());
         data.put("probability", detect.getProbability());
         data.put("timestamp", detect.getTimestamp());
+        data.put("filename", detect.getFilename());
 
         this.database.getDb().insert("detect", null, data);
         this.incrementTotalEmotion(emotion);
@@ -118,7 +118,7 @@ public class EmotionRepository {
             where = "where substr(timestamp, 1,10)='" + todayDate + "' ";
         }
 
-        Cursor cursor = database.getDb().rawQuery("select id, id_emotion, probability, timestamp from detect " + where + orderClause, null);
+        Cursor cursor = database.getDb().rawQuery("select id, id_emotion, probability, timestamp, filename from detect " + where + orderClause, null);
 
         if (cursor.getCount() > 0) {
             while (cursor.moveToNext()) {
@@ -128,7 +128,8 @@ public class EmotionRepository {
                 Emotion emotion = getEmotionById(idEmotion);
                 float probability = Float.parseFloat(cursor.getString(2));
                 String timestamp = cursor.getString(3);
-                detects.add(new Detect(id, emotion, probability, timestamp));
+                String filename = cursor.getString(4);
+                detects.add(new Detect(id, emotion, probability, timestamp, filename));
             }
         }
         return detects;
@@ -138,7 +139,7 @@ public class EmotionRepository {
         ArrayList<Detect> detects = new ArrayList<>();
         SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy");
         String todayDate = dateFormat.format(new Date());
-        Cursor cursor = database.getDb().rawQuery("select id, id_emotion, probability, timestamp from detect where substr(timestamp, 1,10)='" + todayDate + "'", null);
+        Cursor cursor = database.getDb().rawQuery("select id, id_emotion, probability, timestamp, filename from detect where substr(timestamp, 1,10)='" + todayDate + "'", null);
 
         ArrayList<Emotion> emotions = getEmotionIdAndName();
 
@@ -150,8 +151,9 @@ public class EmotionRepository {
                 Emotion emotion = getEmotionById(idEmotion);
                 float probability = Float.parseFloat(cursor.getString(2));
                 String timestamp = cursor.getString(3);
+                String filename = cursor.getString(4);
 
-                Detect detect = new Detect(id, emotion, probability, timestamp);
+                Detect detect = new Detect(id, emotion, probability, timestamp, filename);
                 for (Emotion e: emotions){
                     if(e.getId() == detect.getEmotion().getId()){
                         e.setTotal(e.getTotal() + 1);

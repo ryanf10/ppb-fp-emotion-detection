@@ -2,7 +2,12 @@ package com.example.emotiondetection;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
+import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.SimpleAdapter;
@@ -18,6 +23,7 @@ import com.example.emotiondetection.model.Detect;
 import com.example.emotiondetection.model.Emotion;
 import com.example.emotiondetection.repository.EmotionRepository;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -80,6 +86,16 @@ public class TodayStatisticActivity extends AppCompatActivity {
         }
 
         ListAdapter adapter = new SimpleAdapter(TodayStatisticActivity.this, detects, R.layout.list_view, new String[]{"prediction", "timestamp"}, new int[]{R.id.prediction, R.id.timestamp});
+        listHistory.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                Intent intent = new Intent();
+                intent.setAction(Intent.ACTION_VIEW);
+                File mediaStorageDir = new File(getExternalFilesDir(Environment.DIRECTORY_PICTURES), "EXAMPLE_EMOTION_DETECTION");
+                intent.setDataAndType(Uri.parse(mediaStorageDir.getPath()  + File.separator + detectData.get(i).getFilename()), "image/*");
+                startActivity(intent);
+            }
+        });
         listHistory.setAdapter(adapter);
     }
 }

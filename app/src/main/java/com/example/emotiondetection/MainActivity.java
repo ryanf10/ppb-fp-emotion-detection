@@ -14,7 +14,6 @@ public class MainActivity extends AppCompatActivity {
     private static boolean isChecked = false;
 
     private void check(){
-        System.out.println("masuk");
         emotionRepository.initEmotionData();
     }
 

@@ -2,11 +2,16 @@ package com.example.emotiondetection;
 
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
+import android.text.format.DateFormat;
 import android.util.Log;
 import android.view.SurfaceView;
 import android.view.View;
 import android.widget.Toast;
+
+import androidx.core.content.FileProvider;
 
 import com.example.emotiondetection.ml.Model;
 import com.example.emotiondetection.model.Emotion;
@@ -17,12 +22,14 @@ import org.opencv.android.BaseLoaderCallback;
 import org.opencv.android.CameraBridgeViewBase;
 import org.opencv.android.OpenCVLoader;
 import org.opencv.android.Utils;
+import org.opencv.core.CvType;
 import org.opencv.core.Mat;
 import org.opencv.core.MatOfRect;
 import org.opencv.core.Point;
 import org.opencv.core.Rect;
 import org.opencv.core.Scalar;
 import org.opencv.core.Size;
+import org.opencv.imgcodecs.Imgcodecs;
 import org.opencv.imgproc.Imgproc;
 import org.opencv.objdetect.CascadeClassifier;
 import org.tensorflow.lite.DataType;
@@ -37,6 +44,7 @@ import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 
 
@@ -133,6 +141,18 @@ public class CameraActivity extends org.opencv.android.CameraActivity {
         return new Prediction(Emotion.emotions[maxPos], max * 100);
     }
 
+    private void saveImg(Mat input, String name){
+        Imgcodecs imageCodecs = new Imgcodecs();
+        File mediaStorageDir = new File(getExternalFilesDir(Environment.DIRECTORY_PICTURES), "EXAMPLE_EMOTION_DETECTION");
+
+        // Buat folder
+        if (!mediaStorageDir.exists() && !mediaStorageDir.mkdirs()) {
+            Log.d("EXAMPLE.EMOTION", "failed to create directory");
+        }
+        //nama file dengan full path
+        imageCodecs.imwrite(mediaStorageDir.getPath() + File.separator + name + ".jpg",input);
+    }
+
     private ByteBuffer imagePreprocess(Mat input_gray, Rect rect){
         //crop image
         Mat roi = new Mat(input_gray, rect);
@@ -193,7 +213,16 @@ public class CameraActivity extends org.opencv.android.CameraActivity {
                             String text = "Terima Kasih\n";
                             for (Prediction result: results){
                                 text += result.getLabel() + "\n";
-                                emotionRepository.insertDetect(result);
+
+
+                                //save captured image
+                                Date d = new Date();
+                                CharSequence s = DateFormat.format("yyyyMMdd-hh-mm-ss", d.getTime());
+                                Mat img = new Mat((int) capture.size().height, (int) capture.size().width, CvType.CV_8UC3);
+                                Imgproc.cvtColor(capture, img, Imgproc.COLOR_BGR2RGB);
+                                saveImg(img, s.toString());
+
+                                emotionRepository.insertDetect(result, s.toString() + ".jpg");
                             }
                             Toast.makeText(getApplicationContext(), text, Toast.LENGTH_LONG).show();
                         }
